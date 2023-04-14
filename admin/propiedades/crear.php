@@ -27,7 +27,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $estacionamiento = mysqli_real_escape_string($db, $_POST["estacionamiento"]);
     $vendedorId = mysqli_real_escape_string($db, $_POST["vendedor"]);
     $creado = date("Y/m/d");
-
+    $imagen = $_FILES["imagen"];
+    
     if (!$titulo) {
         $errores["titulo"] = "El campo titulo no debe estar vacio";
     }
@@ -56,16 +57,42 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $errores["vendedor"] = "El campo vendedor no debe estar vacio";
     }
 
+    if (!$imagen["name"] || $imagen["error"]) {
+        $errores["titulo"] = "La imagen es obligatoria";
+    }
+
+    //Validar por tamaño 100kb max
+    $medida = 1000 * 2000;
+
+    if($imagen["size"] > $medida){
+        $errores[] = "La imagen es demasiado pesada";
+    }
+
+    //Insertar
     if(empty($errores)){
-        $query = "INSERT INTO propiedades (titulo,precio,descripcion,habitaciones,wc,estacionamiento,creado,vendedores_id) VALUES ('$titulo','$precio','$descripcion','$habitaciones','$wc','$estacionamiento','$creado',$vendedorId ) ";
+
+        /* Subida de archivos */
+        // Crear carpeta
+        $carpetaImagenes ="../../imagenes/";
+        if(!is_dir($carpetaImagenes)){
+            mkdir($carpetaImagenes);
+        }
+
+        //Generar nombre unico
+        $extension = pathinfo($imagen["name"], PATHINFO_EXTENSION);
+        $nombreImagen = md5(uniqid(rand(), true ) ).".".$extension;
+
+        //Subir imagen
+        move_uploaded_file($imagen["tmp_name"], $carpetaImagenes . $nombreImagen);
+
+        $query = "INSERT INTO propiedades (titulo,precio,imagen,descripcion,habitaciones,wc,estacionamiento,creado,vendedores_id) VALUES ('$titulo','$precio','$nombreImagen','$descripcion','$habitaciones','$wc','$estacionamiento','$creado',$vendedorId ) ";
 
         $resultado = mysqli_query($db, $query);
     
         if ($resultado) {
-            header("Location: /bienesraices/admin");
+            header("Location: /bienesraices/admin?resultado=1");
         }
     }
-    //Insertar
    
 }
 
