@@ -12,7 +12,7 @@ $propiedades = mysqli_query($db, $consulta);
     <?php foreach ($propiedades as $propiedad) : ?>
         <div class="anuncio">
 
-            <img loading="lazy" src="/bienesraices/imagenes/<?=$propiedad["imagen"]?>" alt="imagen propiedad">
+            <img class="imagen-anuncio" loading="lazy" src="/bienesraices/imagenes/<?=$propiedad["imagen"]?>" alt="imagen propiedad">
 
             <div class="contenido-anuncio">
                 <h3><?= $propiedad["titulo"] ?></h3>
