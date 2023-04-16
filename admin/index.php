@@ -1,4 +1,11 @@
 <?php
+require("../includes/funciones.php");
+$auth = estaAutenticado();
+
+if(!$auth){
+    header("Location: /bienesraices");
+}
+
 require("../includes/config/database.php");
 $db = conectarDB();
 
@@ -33,7 +40,6 @@ if($_SERVER["REQUEST_METHOD"]==="POST"){
 }
 
 //Incluye template
-require("../includes/funciones.php");
 incluirTemplate("header", $inicio = false);
 ?>
 
